@@ -80,7 +80,6 @@ if(mysqli_num_rows($result) > 0)
 	{# process each row
          echo '<div align="center">
 					<a href="' . VIRTUAL_PATH . 'surveys/survey_view.php?id=' . (int)$row['SurveyID'] . '">' . dbOut($row['Title']) . '</a>';
-					
          echo ' </div>';
 	}
 	echo $myPager->showNAV(); # show paging nav, only if enough records	 

@@ -33,32 +33,73 @@ if(isset($_GET['id']) && (int)$_GET['id'] > 0){#proper data must be on querystri
 }else{
 	myRedirect(VIRTUAL_PATH . "surveys/index.php");
 }
+/*
+Results OR Survey, but not both.
+There may be no survey at all.
 
-$mySurvey = new Survey($myID);
-#dumpDie is a custom code for vardump and die
-//dumpDie($mySurvey);
+	if result, show result
+	else if survey, show survey
+	else show sorry, no survey
 
-if($mySurvey->isValid)
-{
-	$config->titleTag = $mySurvey->Title . " survey!";
-}else{//no survey
-	$config->titleTag = "There's no survey.";
+if(result)
+{//show result
+
+}else if(survey){//show survey
+
+}else{//show sorry
+	echo 'no survey';
+}
+//------------------------------
+if(result)
+{//show result
+
+}else{
+	if(survey){//show survey
+
+	}else{//show sorry
+		echo 'no survey';
+	}
+}
+
+*/
+$myResult = new Result($myID);
+if($myResult->isValid)
+{//show result
+	$PageTitle = "'Result to " . $myResult->Title . "' Survey!";
+}else{//show survey
+	$mySurvey = new Survey($myID);
+	if($mySurvey->isValid)
+	{
+		$config->titleTag = $mySurvey->Title . " survey!";
+	}else{//no survey
+		$config->titleTag = "There's no survey.";
+	}
 }
 
 get_header(); #defaults to theme header or header_inc.php
 echo '<h3 align="center">' . $config->titleTag . '</h3>';
 
-if($mySurvey->isValid)
-{
-	echo "<b>" . $mySurvey->SurveyID . ") </b>";
-	echo "<b>" . $mySurvey->Title . "</b>-->";
-	echo "<b>" . $mySurvey->Description . "</b><br />";
-	echo $mySurvey->showQuestions();
+if($myResult->isValid)
+{//show result
+	$PageTitle = "'Result to " . $myResult->Title . "' Survey!";
+	echo "Survey Title: <b>" . $myResult->Title . "</b><br />";  //show data on page
+	echo "Survey Description: " . $myResult->Description . "<br />";
+	$myResult->showGraph() . "<br />";	//showTallies method shows all questions, answers and tally totals!
 	echo SurveyUtil::responseList($myID);
-	
-}else{//no survey
-	echo '<p>Please check to see if there is a problem.</p>';
-}	
+	unset($myResult);  //destroy object & release resources
+}else{//check for a survey
+	if($mySurvey->isValid)
+	{//show survey
+		echo "<b>" . $mySurvey->SurveyID . ") </b>";
+		echo "<b>" . $mySurvey->Title . "</b>-->";
+		echo "<b>" . $mySurvey->Description . "</b><br />";
+		echo $mySurvey->showQuestions();
+		echo SurveyUtil::responseList($myID);
+	}else{//sorry, no survey
+		echo '<p>Please check to see if there is a problem.</p>';
+	}
+}
+
 get_footer(); #defaults to theme footer or footer_inc.php
 
 //This file is related to Survey_inc.php
